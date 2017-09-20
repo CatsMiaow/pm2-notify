@@ -42,6 +42,8 @@ function sendMail() {
     console.log(info);
   }).catch((err) => {
     console.error(err);
+  }).then(() => { // finally
+    timeout = null;
   });
 }
 
@@ -50,24 +52,21 @@ pm2.connect(() => {
     console.log('[PM2] Log streaming started');
 
     events.forEach((event) => {
-      queue[event] = [];
-
       bus.on(event, (packet) => {
         if (!config.target[event].includes(packet.process.name)) {
           return;
         }
 
+        queue[event] = queue[event] || [];
         queue[event].push({
           event,
           name: packet.process.name,
           data: packet.data,
         });
 
-        if (timeout) {
-          clearTimeout(timeout);
+        if (!timeout) {
+          timeout = setTimeout(sendMail, config.timeout);
         }
-
-        timeout = setTimeout(sendMail, config.timeout);
       });
     });
   });

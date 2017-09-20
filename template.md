@@ -1,4 +1,4 @@
-#### ${event} >>> ${name}
+#### ${event} → ${name}
 
 ```bash
 ${data}
