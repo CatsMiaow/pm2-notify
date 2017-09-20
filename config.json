@@ -1,0 +1,21 @@
+{
+  "mail": {
+    "from": "me <from@test.com>",
+    "to": "to@test.com"
+  },
+  "smtp": {
+    "host": "smtp.gmail.com",
+    "port": 587,
+    "secure": false,
+    "auth": {
+      "user": "GmailAddress",
+      "pass": "GoogleAppPassword"
+    }
+  },
+  "target": {
+    "log:err": ["appName"]
+  },
+  "subject": "Error ${NODE_ENV}/${HOSTNAME}/${USER}",
+  "template": null,
+  "timeout": 10000
+}

@@ -1,0 +1,35 @@
+{
+  "name": "pm2-notify",
+  "version": "0.1.0",
+  "description": "PM2 Error log email notifier",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "pm2 start index.js --name pm2-notify"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CatsMiaow/pm2-notify.git"
+  },
+  "keywords": [
+    "pm2",
+    "notify",
+    "error"
+  ],
+  "author": "infiltrator@naver.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CatsMiaow/pm2-notify/issues"
+  },
+  "homepage": "https://tested.kr",
+  "dependencies": {
+    "nodemailer": "^4.1.0",
+    "nodemailer-markdown": "^1.0.1",
+    "pm2": "^2.7.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.7.1",
+    "eslint-config-airbnb-base": "^12.0.0",
+    "eslint-plugin-import": "^2.7.0"
+  }
+}
