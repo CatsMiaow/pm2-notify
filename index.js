@@ -7,7 +7,8 @@ const template = require('./template');
 const config = require('./config.json');
 
 const subject = template(config.subject, process.env);
-const body = fs.readFileSync(config.template || './template.md', 'utf8');
+const body = fs.readFileSync(config.template || './template/body.md', 'utf8');
+const sublist = fs.readFileSync(config.template || './template/sublist.md', 'utf8');
 const events = Object.keys(config.target);
 const queue = {};
 let timeout = null;
@@ -28,9 +29,18 @@ function sendMail() {
   }
 
   qvents.forEach((event) => {
+    const content = []; // 프로젝트별 오류 묶음
     queue[event].forEach((data) => {
-      templates.push(template(body, data));
+      content[data.name] = content[data.name] || '';
+      content[data.name] += data.message;
     });
+
+    const messages = []; // 프로젝트별 메시지
+    Object.keys(content).forEach((name) => {
+      messages.push(template(sublist, { name, message: content[name] }));
+    });
+
+    templates.push(template(body, { event, message: messages.join('\n') }));
 
     delete queue[event];
   });
@@ -61,7 +71,7 @@ pm2.connect(() => {
         queue[event].push({
           event,
           name: packet.process.name,
-          data: packet.data,
+          message: packet.data,
         });
 
         if (!timeout) {
