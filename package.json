@@ -23,13 +23,13 @@
   },
   "homepage": "https://tested.kr",
   "dependencies": {
-    "nodemailer": "^4.4.2",
+    "nodemailer": "^4.6.4",
     "nodemailer-markdown": "^1.0.2",
-    "pm2": "^2.9.3"
+    "pm2": "^2.10.3"
   },
   "devDependencies": {
-    "eslint": "^4.16.0",
+    "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.8.0"
+    "eslint-plugin-import": "^2.11.0"
   }
 }
