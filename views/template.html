@@ -1,0 +1,13 @@
+<mjml>
+  <mj-body width="100%">
+    {{#each logs}}
+		<mj-section full-width="full-width" padding="0">
+      <mj-column>
+        <mj-divider border-color="#F45E43"></mj-divider>
+        <mj-text font-size="20px" color="#F45E43">{{name}}</mj-text>
+        <mj-text><pre><code>{{{message}}}</code></pre></mj-text>
+      </mj-column>
+    </mj-section>
+    {{/each}}
+  </mj-body>
+</mjml>

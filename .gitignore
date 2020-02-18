@@ -1,6 +1,7 @@
+.env
 .vscode
-package-lock.json
-
+.DS_Store
+dist
 
 # Logs
 logs
@@ -60,4 +61,3 @@ typings/
 
 # dotenv environment variables file
 .env
-

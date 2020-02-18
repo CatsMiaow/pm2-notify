@@ -1,14 +1,21 @@
 # pm2-notify
 PM2 Log error email notifier
 
-#### Installation
-```bash
-$ npm install
-$ cp config.json.sample config.json
-$ vim config.json
+### Installation
+```sh
+$ npm ci
+# Edit config
+$ vim src/config.ts
 ```
 
-#### Start
-``` bash
-$ npm start #or node index.js
+### Start
+```sh
+$ npm start
+# OR
+$ npm run build
+$ npm run pm2:start
 ```
+
+### Using
+* [MJML](https://mjml.io) for Email Markup
+* [Handlebars](https://handlebarsjs.com/) for Template Parser

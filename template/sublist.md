@@ -1,5 +1,0 @@
-#### ${name}
-
-```bash
-${message}
-```
