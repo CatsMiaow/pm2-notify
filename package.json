@@ -9,7 +9,7 @@
     "build": "rimraf dist && tsc",
     "prestart": "npm run lint && npm run build",
     "start": "node dist/app",
-    "pm2:start": "pm2 start dist/app.js --env production --name pm2-notify --no-pmx"
+    "pm2:start": "NODE_ENV=production pm2 start dist/app.js --name pm2-notify --no-pmx"
   },
   "dependencies": {
     "handlebars": "^4.7.3",

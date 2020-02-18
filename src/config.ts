@@ -1,4 +1,4 @@
-export const env = process.env.NODE_ENV;
+export const env = process.env.NODE_ENV || 'local';
 export const isProd = (env === 'production');
 
 export const config = {
