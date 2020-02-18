@@ -4,9 +4,10 @@ PM2 Log error email notifier
 ### Installation
 ```sh
 $ npm ci
-# Edit config
-$ vim src/config.ts
 ```
+
+### Configuration
+- Edit [config.ts](src/config.ts)
 
 ### Start
 ```sh
@@ -18,4 +19,5 @@ $ npm run pm2:start
 
 ### Using
 * [MJML](https://mjml.io) for Email Markup
-* [Handlebars](https://handlebarsjs.com/) for Template Parser
+* [Handlebars](https://handlebarsjs.com) for Template Parser
+* [Nodemailer](https://nodemailer.com) for Sending Mail
