@@ -46,7 +46,7 @@ async function sendMail(): Promise<void> {
       throw new Error(JSON.stringify(errors));
     }
 
-    const subject = isProd ? config.subject : `${env}: ${config.subject}`;
+    const subject = isProd ? config.mail.subject : `${env}: ${config.mail.subject}`;
     const info = await transporter.sendMail({ subject, html });
     console.log('SendMail', info);
   } catch (err) {
