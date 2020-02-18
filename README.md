@@ -7,7 +7,7 @@ $ npm ci
 ```
 
 ### Configuration
-- Edit [config.ts](src/config.ts)
+- Edit [src/config.ts](src/config.ts)
 
 ### Start
 ```sh
