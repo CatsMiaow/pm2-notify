@@ -1,5 +1,5 @@
 # pm2-notify
-PM2 Log error email notifier
+PM2 Error log email notifier
 
 ### Installation
 ```sh
