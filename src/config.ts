@@ -1,12 +1,11 @@
-export const env = process.env.NODE_ENV || 'local';
-export const isProd = (env === 'production');
+const { NODE_ENV = 'local', USER, HOSTNAME } = process.env;
 
 export const config = {
   // https://nodemailer.com/message
   mail: {
+    subject: `Error - ${USER}@${HOSTNAME}:${NODE_ENV}`,
     from: 'me <from@test.com>',
     to: 'to@test.com',
-    subject: `Error - ${process.env.USER}@${process.env.HOSTNAME}`,
   },
   // https://nodemailer.com/smtp
   smtp: {

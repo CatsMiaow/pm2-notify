@@ -6,14 +6,11 @@ import pm2 from 'pm2';
 import { compile } from 'handlebars';
 import mjml2html from 'mjml';
 
-import { config, isProd, env } from './config';
+import { config } from './config';
 import { Target, Packet, Log, QData } from './types';
 
 const template = compile(fs.readFileSync(config.template, 'utf8'));
-const transporter = createTransport(config.smtp, {
-  from: config.mail.from,
-  to: config.mail.to,
-});
+const transporter = createTransport(config.smtp, { ...config.mail });
 
 const events = <[Target]>Object.keys(config.target);
 const queues = <Record<Target, QData[]>>{};
@@ -46,8 +43,7 @@ async function sendMail(): Promise<void> {
       throw new Error(JSON.stringify(errors));
     }
 
-    const subject = isProd ? config.mail.subject : `${env}: ${config.mail.subject}`;
-    const info = await transporter.sendMail({ subject, html });
+    const info = await transporter.sendMail({ html });
     console.log('SendMail', info);
   } catch (err) {
     console.error(err);
