@@ -9,7 +9,7 @@
     "build": "rimraf dist && tsc",
     "prestart": "npm run lint && npm run build",
     "start": "node dist/app",
-    "pm2:start": "NODE_ENV=production pm2 start dist/app.js --name pm2-notify --no-pmx",
+    "pm2:start": "NODE_ENV=production pm2 start dist/app.js --name pm2-notify --no-pmx --log-date-format 'YYYY-MM-DD HH:mm:ss'",
     "pm2:delete": "pm2 delete pm2-notify"
   },
   "dependencies": {
