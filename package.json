@@ -2,7 +2,8 @@
   "name": "pm2-notify",
   "version": "1.0.0",
   "description": "PM2 Error log email notifier",
-  "main": "dist/app",
+  "license": "MIT",
+  "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint --ext .ts .",
@@ -31,20 +32,5 @@
     "eslint-plugin-sonarjs": "^0.5.0",
     "rimraf": "^3.0.2",
     "typescript": "^3.7.5"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/CatsMiaow/pm2-notify.git"
-  },
-  "keywords": [
-    "pm2",
-    "error",
-    "email",
-    "notify",
-    "notifier",
-    "notification"
-  ],
-  "homepage": "https://tested.kr",
-  "author": "infiltrator@naver.com",
-  "license": "MIT"
+  }
 }
