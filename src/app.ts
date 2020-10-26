@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
 import * as fs from 'fs';
-import { promisify } from 'util';
+import { compile } from 'handlebars';
+import * as he from 'he';
+import mjml2html from 'mjml';
 import { createTransport } from 'nodemailer';
 import pm2 from 'pm2';
-import { compile } from 'handlebars';
-import mjml2html from 'mjml';
+import { promisify } from 'util';
 
 import { config } from './config';
 import { Target, Packet, Log, QData } from './types';
@@ -32,7 +33,7 @@ async function sendMail(): Promise<void> {
     }
 
     for (const [name, message] of Object.entries(content)) {
-      logs.push({ name: `${name} ${event}`, message });
+      logs.push({ name: `${name} ${event}`, message: he.encode(message) });
     }
   }
 
@@ -80,6 +81,7 @@ function eventBus(event: Target, packet: Packet): void {
     for (const event of events) {
       console.log(`[PM2] ${event} streaming started`);
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       bus.on(event, (packet: Packet) => eventBus(event, packet));
     }
   } catch (err) {
