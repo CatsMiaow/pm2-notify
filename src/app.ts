@@ -5,6 +5,7 @@ import * as he from 'he';
 import mjml2html from 'mjml';
 import { createTransport } from 'nodemailer';
 import pm2 from 'pm2';
+import { EventEmitter } from 'stream';
 import { promisify } from 'util';
 
 import { config } from './config';
@@ -39,7 +40,7 @@ async function sendMail(): Promise<void> {
 
   try {
     const content = template({ logs });
-    const { errors, html } = mjml2html(content, { minify: true });
+    const { errors, html } = mjml2html(content);
     if (errors.length > 0) {
       throw new Error(JSON.stringify(errors));
     }
@@ -65,26 +66,21 @@ function eventBus(event: Target, packet: Packet): void {
   });
 
   if (!timeout) {
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     timeout = setTimeout(sendMail, config.timeout);
   }
 }
 
 (async (): Promise<void> => {
-  try {
-    // https://github.com/nodejs/node/issues/13338#issuecomment-546494270
-    await promisify(pm2.connect).bind(pm2)();
-    console.log('[PM2] Log streaming connected');
+  // https://github.com/nodejs/node/issues/13338#issuecomment-546494270
+  await promisify(pm2.connect).bind(pm2)();
+  console.log('[PM2] Log streaming connected');
 
-    const bus = await promisify(pm2.launchBus).bind(pm2)();
-    console.log('[PM2] Log streaming launched');
+  const bus = <EventEmitter> await promisify(pm2.launchBus).bind(pm2)();
+  console.log('[PM2] Log streaming launched');
 
-    for (const event of events) {
-      console.log(`[PM2] ${event} streaming started`);
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      bus.on(event, (packet: Packet) => eventBus(event, packet));
-    }
-  } catch (err) {
-    console.error(err);
+  for (const event of events) {
+    console.log(`[PM2] ${event} streaming started`);
+    bus.on(event, (packet: Packet) => eventBus(event, packet));
   }
-})();
+})().catch(console.error);

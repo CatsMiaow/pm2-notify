@@ -1,8 +1,14 @@
 import { config } from './config';
 
 export type Target = keyof typeof config.target;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Packet = Record<string, any>;
+
+export interface Packet {
+  id: number;
+  type: string;
+  topic: boolean;
+  data: string;
+  process: Record<string, string>;
+}
 
 export interface Log {
   name: string;
