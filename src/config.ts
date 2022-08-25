@@ -1,5 +1,7 @@
 import dotenv from 'dotenv';
-import { hostname, userInfo } from 'os';
+import { hostname, userInfo } from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 dotenv.config();
 const {
@@ -8,6 +10,8 @@ const {
   MAIL_FROM = 'me <from@test.com>', MAIL_TO = 'to@test.com',
   PM2_APPS = '',
 } = process.env;
+
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const config = {
   // https://nodemailer.com/message
@@ -37,7 +41,7 @@ export const config = {
     // 'log:out': ['appName'], // stdout, As required
   },
   // MJML template
-  template: `${__dirname}/../views/template.html`,
+  template: `${dirname}/../views/template.html`,
   // Send mail every timeout(ms)
   timeout: 10000,
 };

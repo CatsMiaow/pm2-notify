@@ -1,17 +1,17 @@
 /* eslint-disable no-console */
-import * as fs from 'fs';
-import { compile } from 'handlebars';
-import * as he from 'he';
+import fs from 'node:fs';
+import handlebars from 'handlebars';
+import he from 'he';
 import mjml2html from 'mjml';
 import { createTransport } from 'nodemailer';
 import pm2 from 'pm2';
-import { EventEmitter } from 'stream';
-import { promisify } from 'util';
+import { EventEmitter } from 'node:stream';
+import { promisify } from 'node:util';
 
-import { config } from './config';
-import { Target, Packet, Log, QData } from './types';
+import { config } from './config.js';
+import { Target, Packet, Log, QData } from './types.js';
 
-const template = compile(fs.readFileSync(config.template, 'utf8'));
+const template = handlebars.compile(fs.readFileSync(config.template, 'utf8'));
 const transporter = createTransport(config.smtp, { ...config.mail });
 
 const events = <[Target]>Object.keys(config.target);
