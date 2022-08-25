@@ -8,7 +8,7 @@ const {
   NODE_ENV = 'local', USER = userInfo().username, HOSTNAME = hostname(),
   SMTP_HOST = 'smtp.gmail.com', SMTP_PORT = 587, SMTP_USER, SMTP_PASS,
   MAIL_FROM = 'me <from@test.com>', MAIL_TO = 'to@test.com',
-  PM2_APPS = '',
+  PM2_APPS = '', SEND_INTERVAL = 10000,
 } = process.env;
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -43,5 +43,5 @@ export const config = {
   // MJML template
   template: `${dirname}/../views/template.html`,
   // Send mail every timeout(ms)
-  timeout: 10000,
+  timeout: Number(SEND_INTERVAL),
 };
