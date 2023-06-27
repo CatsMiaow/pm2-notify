@@ -1,15 +1,15 @@
-import dotenv from 'dotenv';
+import 'dotenv/config';
 import { hostname, userInfo } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-dotenv.config();
+const { env } = process;
 const {
-  NODE_ENV = 'local', USER = userInfo().username, HOSTNAME = hostname(),
-  SMTP_HOST = 'smtp.gmail.com', SMTP_PORT = 587, SMTP_USER, SMTP_PASS,
-  MAIL_FROM = 'me <from@test.com>', MAIL_TO = 'to@test.com',
-  PM2_APPS = '', SEND_INTERVAL = 10000,
-} = process.env;
+  NODE_ENV = 'localhost',
+  USER = userInfo().username,
+  HOSTNAME = hostname(),
+  PM2_APPS = '',
+} = env;
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -17,17 +17,17 @@ export const config = {
   // https://nodemailer.com/message
   mail: {
     subject: `Error - ${USER}@${HOSTNAME}:${NODE_ENV}`,
-    from: MAIL_FROM,
-    to: MAIL_TO,
+    from: env.MAIL_FROM || 'me <from@test.com>',
+    to: env.MAIL_TO || 'to@test.com',
   },
   // https://nodemailer.com/smtp
   smtp: {
-    host: SMTP_HOST,
-    port: Number(SMTP_PORT),
+    host: env.SMTP_HOST || 'smtp.gmail.com',
+    port: Number(env.SMTP_PORT) || 587,
     secure: false,
     auth: {
-      user: SMTP_USER,
-      pass: SMTP_PASS,
+      user: env.SMTP_USER,
+      pass: env.SMTP_PASS,
     },
   },
   /**
@@ -43,5 +43,5 @@ export const config = {
   // MJML template
   template: `${dirname}/../views/template.html`,
   // Send mail every timeout(ms)
-  timeout: Number(SEND_INTERVAL),
+  timeout: Number(env.SEND_INTERVAL) || 10000,
 };
