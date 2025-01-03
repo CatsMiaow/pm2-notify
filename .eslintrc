@@ -2,8 +2,8 @@
   "root": true,
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
+    "project": true,
     "tsconfigRootDir": ".",
-    "project": "tsconfig.json",
     "sourceType": "module"
   },
   "plugins": ["@typescript-eslint", "sonarjs"],
@@ -11,9 +11,9 @@
     "eslint:recommended",
     "airbnb-base",
     "airbnb-typescript/base",
-    "plugin:sonarjs/recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    "plugin:sonarjs/recommended-legacy",
+    "plugin:@typescript-eslint/strict-type-checked",
+    "plugin:@typescript-eslint/stylistic-type-checked"
   ],
   "rules": {
     "no-restricted-syntax": "off",
@@ -22,6 +22,8 @@
     "import/no-default-export": "error",
     "import/prefer-default-export": "off",
 
-    "sonarjs/cognitive-complexity": ["error", 25]
+    "sonarjs/cognitive-complexity": ["error", 25],
+
+    "@typescript-eslint/consistent-type-assertions": ["error", { "assertionStyle": "angle-bracket" }]
   }
 }
