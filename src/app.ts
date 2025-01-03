@@ -13,6 +13,7 @@ import { Target, Packet, Log, QData } from './types.js';
 
 const template = handlebars.compile(fs.readFileSync(config.template, 'utf8'));
 const transporter = createTransport(config.smtp, { ...config.mail });
+const codeWordWrap = 'display:inline-block; white-space:pre-wrap; max-width:100%; word-break:break-all; word-wrap:break-word;';
 
 const events = <[Target]>Object.keys(config.target);
 const queues = <Record<Target, QData[]>>{};
@@ -34,7 +35,8 @@ async function sendMail(): Promise<void> {
     }
 
     for (const [name, message] of Object.entries(content)) {
-      logs.push({ name: `${name} ${event}`, message: he.encode(message) });
+      const style = (message.trimStart().startsWith('{')) ? codeWordWrap : '';
+      logs.push({ name: `${name} ${event}`, message: he.encode(message), style });
     }
   }
 
@@ -81,6 +83,10 @@ function eventBus(event: Target, packet: Packet): void {
 
   for (const event of events) {
     console.log(`[PM2] ${event} streaming started`);
-    bus.on(event, (packet: Packet) => eventBus(event, packet));
+    bus.on(event, (packet: Packet) => {
+      eventBus(event, packet);
+    });
   }
-})().catch(console.error);
+})().catch((error: unknown) => {
+  console.error(error);
+});

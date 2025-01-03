@@ -13,6 +13,7 @@ export interface Packet {
 export interface Log {
   name: string;
   message: string;
+  style: string;
 }
 
 export interface QData {

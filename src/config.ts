@@ -17,12 +17,12 @@ export const config = {
   // https://nodemailer.com/message
   mail: {
     subject: `Error - ${USER}@${HOSTNAME}:${NODE_ENV}`,
-    from: env.MAIL_FROM || 'me <from@test.com>',
-    to: env.MAIL_TO || 'to@test.com',
+    from: env.MAIL_FROM ?? 'me <from@test.com>',
+    to: env.MAIL_TO ?? 'to@test.com',
   },
   // https://nodemailer.com/smtp
   smtp: {
-    host: env.SMTP_HOST || 'smtp.gmail.com',
+    host: env.SMTP_HOST ?? 'smtp.gmail.com',
     port: Number(env.SMTP_PORT) || 587,
     secure: false,
     auth: {
