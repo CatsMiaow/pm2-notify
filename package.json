@@ -6,7 +6,7 @@
   "type": "module",
   "main": "dist/app",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -18,17 +18,17 @@
     "pm2:delete": "pm2 delete pm2-notify"
   },
   "dependencies": {
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.5.0",
     "handlebars": "^4.7.8",
     "he": "^1.2.0",
     "mjml": "^4.15.3",
-    "nodemailer": "^6.9.16",
-    "pm2": "^5.4.3"
+    "nodemailer": "^7.0.3",
+    "pm2": "^6.0.8"
   },
   "devDependencies": {
     "@types/he": "^1.2.3",
     "@types/mjml": "^4.7.4",
-    "@types/node": "^20.17.11",
+    "@types/node": "^22.15.32",
     "@types/nodemailer": "^6.4.17",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
@@ -38,7 +38,7 @@
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-sonarjs": "^1.0.4",
-    "typescript": "~5.5.4"
+    "typescript": "~5.8.3"
   },
   "license": "MIT"
 }
