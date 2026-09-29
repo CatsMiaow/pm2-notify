@@ -5,7 +5,8 @@
       <mj-column width="100%">
         <mj-divider border-color="#F45E43"></mj-divider>
         <mj-text font-size="20px" color="#F45E43">{{name}}</mj-text>
-        <mj-text><pre><code style="{{style}}">{{{message}}}</code></pre></mj-text>
+        {{!-- JSON logs are usually one long line, so only they wrap; other logs keep their layout --}}
+        <mj-text><pre><code{{#if json}} style="display:inline-block; white-space:pre-wrap; max-width:100%; word-break:break-all; word-wrap:break-word;"{{/if}}>{{message}}</code></pre></mj-text>
       </mj-column>
     </mj-section>
     {{/each}}

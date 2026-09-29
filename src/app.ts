@@ -1,92 +1,64 @@
-/* eslint-disable no-console */
-import fs from 'node:fs';
-import handlebars from 'handlebars';
-import he from 'he';
-import mjml2html from 'mjml';
-import { createTransport } from 'nodemailer';
-import pm2 from 'pm2';
-import { EventEmitter } from 'node:stream';
+import type { EventEmitter } from 'node:events';
 import { promisify } from 'node:util';
+import pm2 from 'pm2';
 
-import { config } from './config.js';
-import { Target, Packet, Log, QData } from './types.js';
+import { config } from './config.ts';
+import { sendLogs } from './mail.ts';
+import type { QData } from './render.ts';
 
-const template = handlebars.compile(fs.readFileSync(config.template, 'utf8'));
-const transporter = createTransport(config.smtp, { ...config.mail });
-const codeWordWrap = 'display:inline-block; white-space:pre-wrap; max-width:100%; word-break:break-all; word-wrap:break-word;';
+interface Packet {
+  data: string;
+  process: { name: string };
+}
 
-const events = <[Target]>Object.keys(config.target);
-const queues = <Record<Target, QData[]>>{};
-let timeout: NodeJS.Timer | null = null;
-
-events.forEach((event: Target) => {
-  queues[event] = [];
-});
+const queue: QData[] = [];
+let scheduled = false;
+// Sends run one at a time, so a slow SMTP server never gets overlapping connections
+let sending = Promise.resolve();
 
 async function sendMail(): Promise<void> {
-  const logs: Log[] = [];
-
-  for (const [event, qdata] of Object.entries(queues)) {
-    const content: Record<string, string> = {};
-
-    for (const data of qdata.splice(0, qdata.length)) {
-      content[data.name] = content[data.name] || '';
-      content[data.name] += data.message;
-    }
-
-    for (const [name, message] of Object.entries(content)) {
-      const style = (message.trimStart().startsWith('{')) ? codeWordWrap : '';
-      logs.push({ name: `${name} ${event}`, message: he.encode(message), style });
-    }
-  }
+  // Drain and unschedule together, so logs arriving while sending get their own mail
+  const items = queue.splice(0);
+  scheduled = false;
 
   try {
-    const content = template({ logs });
-    const { errors, html } = mjml2html(content);
-    if (errors.length > 0) {
-      throw new Error(JSON.stringify(errors));
-    }
-
-    const info = await transporter.sendMail({ html });
+    const info = await sendLogs(items);
     console.log('SendMail', info);
-  } catch (err) {
-    console.error(err);
-  } finally {
-    timeout = null;
+  } catch (error) {
+    console.error(error);
   }
 }
 
-function eventBus(event: Target, packet: Packet): void {
-  if (!config.target[event].includes(packet.process.name)) {
-    return;
+function enqueue(data: QData): void {
+  queue.push(data);
+  if (!scheduled) {
+    scheduled = true;
+    setTimeout(() => {
+      sending = sending.then(sendMail);
+    }, config.sendInterval * 1000);
+  }
+}
+
+if (Object.values(config.target).flat().length === 0) {
+  throw new Error('Set PM2_APPS or PM2_OUT_APPS in .env');
+}
+
+// https://github.com/nodejs/node/issues/13338#issuecomment-546494270
+await promisify(pm2.connect).bind(pm2)();
+console.log('[PM2] Log streaming connected');
+
+const bus = await promisify<EventEmitter>(pm2.launchBus).bind(pm2)();
+console.log('[PM2] Log streaming launched');
+
+for (const [event, apps] of Object.entries(config.target)) {
+  if (apps.length === 0) {
+    continue;
   }
 
-  queues[event].push({
-    event,
-    name: packet.process.name,
-    message: packet.data,
+  console.log(`[PM2] ${event} streaming started`);
+  bus.on(event, (packet: Packet) => {
+    if (apps.includes(packet.process.name)) {
+      enqueue({ event, name: packet.process.name, message: packet.data });
+    }
   });
-
-  if (!timeout) {
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    timeout = setTimeout(sendMail, config.timeout);
-  }
 }
-
-(async (): Promise<void> => {
-  // https://github.com/nodejs/node/issues/13338#issuecomment-546494270
-  await promisify(pm2.connect).bind(pm2)();
-  console.log('[PM2] Log streaming connected');
-
-  const bus = <EventEmitter> await promisify(pm2.launchBus).bind(pm2)();
-  console.log('[PM2] Log streaming launched');
-
-  for (const event of events) {
-    console.log(`[PM2] ${event} streaming started`);
-    bus.on(event, (packet: Packet) => {
-      eventBus(event, packet);
-    });
-  }
-})().catch((error: unknown) => {
-  console.error(error);
-});
