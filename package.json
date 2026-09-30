@@ -1,44 +1,37 @@
 {
   "name": "pm2-notify",
   "version": "1.0.0",
-  "description": "Error log email notifier for PM2",
+  "description": "Batched email notifier for PM2 error logs",
   "private": true,
   "type": "module",
-  "main": "dist/app",
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint --ext .ts .",
-    "build": "del-cli dist && tsc",
-    "prestart": "npm run lint && npm run build",
-    "start": "node dist/app",
-    "pm2:start": "NODE_ENV=production pm2 start dist/app.js --name pm2-notify --no-pmx --log-date-format 'YYYY-MM-DD HH:mm:ss'",
+    "test": "node --test",
+    "lint": "oxlint",
+    "typecheck": "tsc",
+    "prestart": "npm run lint && npm run typecheck",
+    "start": "node src/app.ts",
+    "mail:preview": "node src/mail.preview.ts",
+    "pm2:start": "NODE_ENV=production pm2 start src/app.ts --interpreter node --name pm2-notify --no-pmx --log-date-format 'YYYY-MM-DD HH:mm:ss'",
     "pm2:delete": "pm2 delete pm2-notify"
   },
   "dependencies": {
-    "dotenv": "^16.5.0",
-    "handlebars": "^4.7.8",
-    "he": "^1.2.0",
-    "mjml": "^4.15.3",
-    "nodemailer": "^7.0.3",
-    "pm2": "^6.0.8"
+    "handlebars": "^4.7.9",
+    "mjml": "^5.4.1",
+    "nodemailer": "^10.0.12",
+    "pm2": "^7.0.4"
   },
   "devDependencies": {
-    "@types/he": "^1.2.3",
-    "@types/mjml": "^4.7.4",
-    "@types/node": "^22.15.32",
-    "@types/nodemailer": "^6.4.17",
-    "@typescript-eslint/eslint-plugin": "^7.18.0",
-    "@typescript-eslint/parser": "^7.18.0",
-    "del-cli": "^6.0.0",
-    "eslint": "^8.57.1",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-airbnb-typescript": "^18.0.0",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-sonarjs": "^1.0.4",
-    "typescript": "~5.8.3"
+    "@types/mjml": "^5.0.0",
+    "@types/node": "^24.19.0",
+    "oxlint": "^1.86.0",
+    "oxlint-tsgolint": "^7.0.2003",
+    "typescript": "^7.0.2"
+  },
+  "overrides": {
+    "js-yaml": "^4.3.2"
   },
   "license": "MIT"
 }

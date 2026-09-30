@@ -1,30 +1,41 @@
-import 'dotenv/config';
+import { existsSync } from 'node:fs';
 import { hostname, userInfo } from 'node:os';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+
+const envFile = new URL('../.env', import.meta.url);
+if (existsSync(envFile)) {
+  process.loadEnvFile(envFile);
+}
 
 const { env } = process;
 const {
   NODE_ENV = 'localhost',
   USER = userInfo().username,
   HOSTNAME = hostname(),
-  PM2_APPS = '',
+  MAIL_FROM = '',
+  MAIL_TO = '',
 } = env;
 
-const dirname = path.dirname(fileURLToPath(import.meta.url));
+if (!MAIL_FROM || !MAIL_TO) {
+  throw new Error('Set MAIL_FROM and MAIL_TO in .env');
+}
+
+function list(value = ''): string[] {
+  return value.split(',').map((item) => item.trim()).filter(Boolean);
+}
 
 export const config = {
   // https://nodemailer.com/message
   mail: {
     subject: `Error - ${USER}@${HOSTNAME}:${NODE_ENV}`,
-    from: env.MAIL_FROM ?? 'me <from@test.com>',
-    to: env.MAIL_TO ?? 'to@test.com',
+    from: MAIL_FROM,
+    to: MAIL_TO,
   },
   // https://nodemailer.com/smtp
+  // Port 465 uses TLS from the start, other ports must upgrade with STARTTLS
   smtp: {
     host: env.SMTP_HOST ?? 'smtp.gmail.com',
     port: Number(env.SMTP_PORT) || 587,
-    secure: false,
+    requireTLS: true,
     auth: {
       user: env.SMTP_USER,
       pass: env.SMTP_PASS,
@@ -32,16 +43,17 @@ export const config = {
   },
   /**
    * https://pm2.keymetrics.io/docs/usage/application-declaration/#general
-   * appName is the value assigned to `--name` in PM2
-   * ['api', 'server', 'admin', ...]
+   * App names are the values given to `--name` in PM2
+   * `log:err` is stderr and `log:out` is stdout
    */
   target: {
-    'log:err': PM2_APPS.split(',').map((appName) => appName.trim()),
-    // 'log:err': ['appName'], // stderr
-    // 'log:out': ['appName'], // stdout, As required
+    'log:err': list(env.PM2_APPS),
+    'log:out': list(env.PM2_OUT_APPS),
   },
-  // MJML template
-  template: `${dirname}/../views/template.html`,
-  // Send mail every timeout(ms)
-  timeout: Number(env.SEND_INTERVAL) || 10000,
+  // How long to collect logs before sending them in one mail (seconds)
+  sendInterval: Number(env.SEND_INTERVAL) || 10,
 };
+
+if (config.sendInterval < 1 || config.sendInterval > 86400) {
+  throw new Error('SEND_INTERVAL must be 1 to 86400 seconds');
+}
